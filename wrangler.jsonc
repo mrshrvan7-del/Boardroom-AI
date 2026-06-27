@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "boardroomai",
+  "compatibility_date": "2026-06-27",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "build": {
+    "command": "npx opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion"
+  }
+}
