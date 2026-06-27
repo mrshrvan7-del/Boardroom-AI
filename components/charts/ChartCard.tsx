@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { AlertCircle, HelpCircle } from 'lucide-react';
 import { useAppStore } from '../../app/store';
+import { getApiUrl } from '../../app/apiConfig';
 import LineChart from './LineChart';
 import BarChart from './BarChart';
 import PieChart from './PieChart';
@@ -33,7 +34,7 @@ export default function ChartCard({ config }: { config: ChartConfig }) {
       setLoading(true);
       setError(null);
       
-      axios.post(`http://127.0.0.1:8000/api/chart_data/${sessionId}`, {
+      axios.post(getApiUrl(`/api/chart_data/${sessionId}`), {
         chart_type: config.chart_type,
         x_column: config.x_column,
         y_column: config.y_column,

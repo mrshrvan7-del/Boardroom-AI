@@ -16,6 +16,7 @@ import {
   Edit2
 } from 'lucide-react';
 import { useAppStore } from './store';
+import { getApiUrl } from './apiConfig';
 
 export default function UploadPage() {
   const router = useRouter();
@@ -81,7 +82,7 @@ export default function UploadPage() {
     }
 
     try {
-      const uploadRes = await axios.post('http://127.0.0.1:8000/api/upload', formData, {
+      const uploadRes = await axios.post(getApiUrl('/api/upload'), formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
@@ -122,17 +123,17 @@ export default function UploadPage() {
       // Phase 1: Data Cleaning and Profiling
       setLoadingPhase('Auto-cleaning duplicates, dates, percentages & profiling...');
       setProgress(20);
-      const processRes = await axios.post(`http://127.0.0.1:8000/api/process/${session_id}`);
+      const processRes = await axios.post(getApiUrl(`/api/process/${session_id}`));
       
       // Phase 2: Domain understanding & KPIs
       setLoadingPhase('Classifying business context and mapping KPIs...');
       setProgress(50);
-      const understandRes = await axios.post(`http://127.0.0.1:8000/api/understand/${session_id}`);
+      const understandRes = await axios.post(getApiUrl(`/api/understand/${session_id}`));
       
       // Phase 3: Detailed statistics
       setLoadingPhase('Executing deep correlations, clustering & regression forecasts...');
       setProgress(80);
-      const analyzeRes = await axios.post(`http://127.0.0.1:8000/api/analyze/${session_id}`);
+      const analyzeRes = await axios.post(getApiUrl(`/api/analyze/${session_id}`));
       
       // Update state
       setProgress(100);
@@ -166,7 +167,7 @@ export default function UploadPage() {
       
       // Fetch insights on background and transition
       try {
-        const insightsRes = await axios.post(`http://127.0.0.1:8000/api/insights/${session_id}`);
+        const insightsRes = await axios.post(getApiUrl(`/api/insights/${session_id}`));
         // Wait list/state update
         useAppStore.getState().setInsightsInfo(insightsRes.data);
       } catch (e) {

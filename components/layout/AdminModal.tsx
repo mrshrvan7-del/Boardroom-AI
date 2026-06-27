@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Shield, Lock, X, FileText, Database, ShieldAlert, Eye, Calendar, HardDrive } from 'lucide-react';
+import { getApiUrl } from '../../app/apiConfig';
 
 interface AdminModalProps {
   isOpen: boolean;
@@ -17,8 +18,9 @@ export default function AdminModal({ isOpen, onClose }: AdminModalProps) {
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<any[]>([]);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
+  const [customApiUrl, setCustomApiUrl] = useState('');
 
-  // Clear state when closed
+  // Clear state when closed, and load custom URL
   useEffect(() => {
     if (!isOpen) {
       setUsername('');
@@ -27,10 +29,21 @@ export default function AdminModal({ isOpen, onClose }: AdminModalProps) {
       setError('');
       setLogs([]);
       setExpandedRow(null);
+    } else {
+      setCustomApiUrl(localStorage.getItem('BOARDROOM_API_URL') || '');
     }
   }, [isOpen]);
 
   if (!isOpen) return null;
+
+  const saveApiUrl = () => {
+    if (customApiUrl.trim()) {
+      localStorage.setItem('BOARDROOM_API_URL', customApiUrl.trim());
+    } else {
+      localStorage.removeItem('BOARDROOM_API_URL');
+    }
+    alert('API Endpoint URL updated successfully!');
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +51,7 @@ export default function AdminModal({ isOpen, onClose }: AdminModalProps) {
     setLoading(true);
 
     try {
-      const res = await axios.post('http://127.0.0.1:8000/api/admin/logs', {
+      const res = await axios.post(getApiUrl('/api/admin/logs'), {
         username,
         password
       });
@@ -120,6 +133,29 @@ export default function AdminModal({ isOpen, onClose }: AdminModalProps) {
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500 text-white"
                   />
+                </div>
+                
+                <div className="pt-2 border-t border-slate-800/60 mt-4 space-y-2">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Custom API Endpoint URL</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="e.g. https://api.boardroomai.xyz"
+                      value={customApiUrl}
+                      onChange={(e) => setCustomApiUrl(e.target.value)}
+                      className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-300 focus:outline-none focus:ring-1 focus:ring-rose-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={saveApiUrl}
+                      className="bg-slate-850 hover:bg-slate-800 text-slate-300 font-bold px-4 rounded-xl text-xs transition-all border border-slate-800"
+                    >
+                      Save
+                    </button>
+                  </div>
+                  <p className="text-[9px] text-slate-500 font-medium leading-relaxed">
+                    Leave blank to automatically connect to your local backend at port 8000.
+                  </p>
                 </div>
               </div>
 

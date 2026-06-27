@@ -13,6 +13,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { useAppStore } from '../store';
+import { getApiUrl } from '../apiConfig';
 
 export default function ExportPage() {
   const router = useRouter();
@@ -32,19 +33,19 @@ export default function ExportPage() {
   const exportTypes = [
     {
       format: 'pdf',
-      name: 'PDF Executive Report',
+      name: 'PDF Executive Summary',
       icon: FileText,
       color: 'text-rose-500 bg-rose-500/10 border-rose-200 dark:border-rose-950',
-      description: 'Polished, reader-friendly document containing executive summaries, KPI tables, and full narrative cards. Perfect for corporate print-outs.',
-      details: 'Estimated Page Count: 6 Pages',
+      description: 'Fully designed multi-page business brief including general narrative metrics, color-coded tabular layouts, outliers analysis, and KPI mappings.',
+      details: 'Estimated Page Count: ~2-3 Pages',
     },
     {
       format: 'pptx',
-      name: 'PowerPoint Briefing Deck',
+      name: 'PPTX Corporate Presentation',
       icon: Presentation,
-      color: 'text-amber-500 bg-amber-500/10 border-amber-200 dark:border-amber-950',
-      description: 'Fully structured widescreen slides featuring summary bullets, KPI layouts, action targets, and speaker notes attached to each slide.',
-      details: 'Estimated Slide Count: 6 Slides',
+      color: 'text-orange-500 bg-orange-500/10 border-orange-200 dark:border-orange-950',
+      description: 'High-contrast slide templates populated with executive briefing points, talking guidelines, and primary charts ready for boardroom presentations.',
+      details: 'Estimated Slides: ~5 Slides',
     },
     {
       format: 'xlsx',
@@ -68,7 +69,7 @@ export default function ExportPage() {
 
     try {
       const response = await axios({
-        url: `http://127.0.0.1:8000/api/export/${sessionId}?format=${format}`,
+        url: getApiUrl(`/api/export/${sessionId}?format=${format}`),
         method: 'POST',
         responseType: 'blob', // Important
       });

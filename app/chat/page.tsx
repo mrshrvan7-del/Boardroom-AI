@@ -15,6 +15,7 @@ import {
   Plus
 } from 'lucide-react';
 import { useAppStore } from '../store';
+import { getApiUrl } from '../apiConfig';
 import LineChart from '../../components/charts/LineChart';
 import BarChart from '../../components/charts/BarChart';
 import PieChart from '../../components/charts/PieChart';
@@ -61,7 +62,7 @@ export default function ChatPage() {
     addChatMessage({ role: 'user', content: userMsg });
 
     try {
-      const response = await axios.post(`http://127.0.0.1:8000/api/chat/${sessionId}`, {
+      const response = await axios.post(getApiUrl(`/api/chat/${sessionId}`), {
         message: userMsg,
         conversation_history: chatHistory.map(m => ({ role: m.role, content: m.content }))
       });

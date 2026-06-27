@@ -12,6 +12,7 @@ import {
   ClipboardList
 } from 'lucide-react';
 import { useAppStore } from '../../app/store';
+import { getApiUrl } from '../../app/apiConfig';
 
 export default function MeetingMode() {
   const { 
@@ -32,7 +33,7 @@ export default function MeetingMode() {
   useEffect(() => {
     if (isMeetingMode && sessionId) {
       setLoading(true);
-      axios.post(`http://127.0.0.1:8000/api/meeting/${sessionId}`)
+      axios.post(getApiUrl(`/api/meeting/${sessionId}`))
         .then(res => {
           setData(res.data);
           setLoading(false);
@@ -83,7 +84,7 @@ export default function MeetingMode() {
     setDownloadFormat(format);
     try {
       const response = await axios({
-        url: `http://127.0.0.1:8000/api/export/${sessionId}?format=${format}`,
+        url: getApiUrl(`/api/export/${sessionId}?format=${format}`),
         method: 'POST',
         responseType: 'blob', // Important
       });

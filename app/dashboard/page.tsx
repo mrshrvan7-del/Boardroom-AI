@@ -23,6 +23,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { useAppStore } from '../store';
+import { getApiUrl } from '../apiConfig';
 import ChartCard from '../../components/charts/ChartCard';
 import InsightsSidePanel from '../../components/insights/InsightsSidePanel';
 
@@ -54,7 +55,7 @@ export default function DashboardPage() {
       router.push('/');
     } else {
       // Fetch some sample rows for our expandable raw table
-      axios.get(`http://127.0.0.1:8000/api/session/${sessionId}`)
+      axios.get(getApiUrl(`/api/session/${sessionId}`))
         .then(res => {
           setRawRows(res.data.preview_rows || []);
         })
@@ -68,7 +69,7 @@ export default function DashboardPage() {
     setLoadingOverride(true);
     try {
       // 1. Recalculate context & KPIs
-      const understandRes = await axios.post(`http://127.0.0.1:8000/api/understand/${sessionId}?override_type=${type}`);
+      const understandRes = await axios.post(getApiUrl(`/api/understand/${sessionId}?override_type=${type}`));
       setUnderstandingInfo({
         dataset_type: understandRes.data.dataset_type,
         confidence: understandRes.data.confidence,
@@ -80,11 +81,11 @@ export default function DashboardPage() {
       });
 
       // 2. Re-run analysis (updating primary metric relationships)
-      const analyzeRes = await axios.post(`http://127.0.0.1:8000/api/analyze/${sessionId}`);
+      const analyzeRes = await axios.post(getApiUrl(`/api/analyze/${sessionId}`));
       setAnalysisInfo(analyzeRes.data);
 
       // 3. Re-run insights
-      const insightsRes = await axios.post(`http://127.0.0.1:8000/api/insights/${sessionId}`);
+      const insightsRes = await axios.post(getApiUrl(`/api/insights/${sessionId}`));
       setInsightsInfo(insightsRes.data);
     } catch (err) {
       console.error("Override failed", err);
