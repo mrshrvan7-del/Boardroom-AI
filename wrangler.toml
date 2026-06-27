@@ -2,5 +2,8 @@ name = "boardroomai"
 compatibility_date = "2026-06-27"
 compatibility_flags = ["nodejs_compat"]
 
+[observability]
+enabled = false
+
 [build]
 command = "npx opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion"
