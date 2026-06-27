@@ -119,6 +119,13 @@ async def upload_file(
         else:
             size_str = f"{file_size / (1024 * 1024):.1f} MB"
 
+        # Log audit event
+        try:
+            from backend.services.audit_logger import log_upload_event
+            log_upload_event(filename, size_str, rows_count, cols_count, column_names, dtypes)
+        except Exception as le:
+            print("Audit log fail:", le)
+
         return {
             "session_id": session_id,
             "filename": filename,

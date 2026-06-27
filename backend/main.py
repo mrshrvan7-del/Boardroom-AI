@@ -9,6 +9,7 @@ from backend.api.insights import router as insights_router
 from backend.api.chat import router as chat_router
 from backend.api.meeting import router as meeting_router
 from backend.api.export import router as export_router
+from backend.api.admin import router as admin_router
 
 app = FastAPI(
     title="Boardroom-AI Analytics Platform API",
@@ -34,6 +35,7 @@ app.include_router(insights_router, tags=["Insights & Narratives"])
 app.include_router(chat_router, tags=["Ask AI Chat"])
 app.include_router(meeting_router, tags=["Meeting Mode briefing"])
 app.include_router(export_router, tags=["Export"])
+app.include_router(admin_router, tags=["Admin"])
 
 @app.get("/")
 async def root():

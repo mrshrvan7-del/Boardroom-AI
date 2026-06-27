@@ -1,0 +1,27 @@
+[
+  {
+    "timestamp": "2026-06-27T17:54:29.278792",
+    "filename": "mock_hr_data.csv",
+    "file_size": "231 B",
+    "rows": 3,
+    "columns": 7,
+    "column_names": [
+      "Employee_ID",
+      "Name",
+      "Salary",
+      "Performance_Rating",
+      "Department",
+      "Active_Flag",
+      "Hire_Date"
+    ],
+    "dtypes": {
+      "Employee_ID": "str",
+      "Name": "str",
+      "Salary": "str",
+      "Performance_Rating": "float64",
+      "Department": "str",
+      "Active_Flag": "str",
+      "Hire_Date": "str"
+    }
+  }
+]

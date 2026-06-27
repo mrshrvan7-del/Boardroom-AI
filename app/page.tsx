@@ -40,6 +40,13 @@ export default function UploadPage() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     multiple: false,
     maxSize: 50 * 1024 * 1024, // 50MB
+    accept: {
+      'text/csv': ['.csv'],
+      'text/plain': ['.txt'],
+      'text/tab-separated-values': ['.tsv'],
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+      'application/vnd.ms-excel': ['.xls']
+    },
     onDrop: async (acceptedFiles, fileRejections) => {
       setError(null);
       setTempSession(null);
@@ -49,7 +56,7 @@ export default function UploadPage() {
         if (rej.errors[0].code === 'file-too-large') {
           setError('File too large. Maximum supported size is 50MB.');
         } else {
-          setError('Unsupported file type. Please upload CSV, TSV, JSON, Excel, or TXT.');
+          setError('Unsupported file type. Please upload CSV, TSV, Excel, or TXT.');
         }
         return;
       }
@@ -240,8 +247,13 @@ export default function UploadPage() {
                 Drag & drop your business dataset here
               </h3>
               <p className="text-slate-400 text-xs mt-1">
-                Supports CSV, TSV, XLSX, XLS, JSON, TXT (Up to 50MB)
+                Supports CSV, TSV, XLSX, XLS, TXT (Up to 50MB)
               </p>
+              
+              <div className="mt-6 flex items-center justify-center gap-1.5 text-[10px] text-emerald-500 font-semibold uppercase tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                Secure Offline Decryption Pipeline Active
+              </div>
             </div>
           )}
         </div>
