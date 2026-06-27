@@ -1,4 +1,5 @@
 name = "boardroomai"
+main = ".open-next/worker.js"
 compatibility_date = "2026-06-27"
 compatibility_flags = ["nodejs_compat"]
 
@@ -16,6 +17,10 @@ invocation_logs = true
 enabled = false
 persist = true
 head_sampling_rate = 1
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
 
 [build]
 command = "npx opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion"
