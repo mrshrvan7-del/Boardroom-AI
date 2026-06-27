@@ -96,7 +96,12 @@ export default function UploadPage() {
       setTempSession(uploadRes.data);
     } catch (err: any) {
       console.error(err);
-      const errMsg = err.response?.data?.detail || 'Failed to parse file. Verify formatting and encoding.';
+      let errMsg = 'Failed to parse file. Verify formatting and encoding.';
+      if (!err.response || err.response.status === 404 || err.code === 'ERR_NETWORK') {
+        errMsg = 'Backend connection failed. Click the logo 5 times to open the Security Vault and configure your Custom API Endpoint URL (e.g. your Cloudflare Tunnel subdomain).';
+      } else if (err.response?.data?.detail) {
+        errMsg = err.response.data.detail;
+      }
       setError(errMsg);
     } finally {
       setLoading(false);
@@ -177,7 +182,13 @@ export default function UploadPage() {
       router.push('/dashboard');
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.detail || 'An error occurred during dataset analysis. Please retry.');
+      let errMsg = 'An error occurred during dataset analysis. Please retry.';
+      if (!err.response || err.response.status === 404 || err.code === 'ERR_NETWORK') {
+        errMsg = 'Backend connection lost during analysis. Verify your Cloudflare Tunnel is running and your Custom API Endpoint URL is configured correctly.';
+      } else if (err.response?.data?.detail) {
+        errMsg = err.response.data.detail;
+      }
+      setError(errMsg);
       setLoading(false);
     }
   };
