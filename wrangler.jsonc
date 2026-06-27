@@ -6,7 +6,6 @@
     "nodejs_compat"
   ],
   "assets": {
-    "directory": "./out",
-    "binding": "ASSETS"
+    "directory": "./out"
   }
 }
