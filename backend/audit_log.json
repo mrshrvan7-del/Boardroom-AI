@@ -23,5 +23,39 @@
       "Active_Flag": "str",
       "Hire_Date": "str"
     }
+  },
+  {
+    "timestamp": "2026-06-29T02:01:21.736851",
+    "filename": "test.xlsx",
+    "file_size": "4.8 KB",
+    "rows": 4,
+    "columns": 3,
+    "column_names": [
+      "Revenue",
+      "Date",
+      "Category"
+    ],
+    "dtypes": {
+      "Revenue": "int64",
+      "Date": "str",
+      "Category": "str"
+    }
+  },
+  {
+    "timestamp": "2026-06-29T02:03:13.676187",
+    "filename": "test.xlsx",
+    "file_size": "4.8 KB",
+    "rows": 4,
+    "columns": 3,
+    "column_names": [
+      "Revenue",
+      "Date",
+      "Category"
+    ],
+    "dtypes": {
+      "Revenue": "int64",
+      "Date": "str",
+      "Category": "str"
+    }
   }
 ]

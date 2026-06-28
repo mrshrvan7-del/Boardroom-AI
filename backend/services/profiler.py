@@ -23,21 +23,22 @@ def detect_column_types(df: pd.DataFrame) -> Dict[str, str]:
             
         # Numeric column
         if pd.api.types.is_numeric_dtype(df[col]):
-            # Check if values are mostly integers and act as ID
-            is_id_like = False
-            if pd.api.types.is_integer_dtype(df[col]):
-                # If unique, sequential, or standard identifier
-                if non_null.nunique() == len(non_null) or "id" in col_lower or "code" in col_lower:
-                    is_id_like = True
-            
-            if is_id_like:
-                column_types[col] = "ID"
-            elif "percentage" in col_lower or "pct" in col_lower or "%" in col_lower:
+            # First check explicit numeric/currency patterns in name
+            if "percentage" in col_lower or "pct" in col_lower or "%" in col_lower:
                 column_types[col] = "Percentage"
             elif any(curr in col_lower for curr in ["salary", "revenue", "price", "cost", "amount", "budget", "spend", "sales"]):
                 column_types[col] = "Currency"
             else:
-                column_types[col] = "Numeric"
+                # Then check if values act as ID
+                is_id_like = False
+                if pd.api.types.is_integer_dtype(df[col]):
+                    if non_null.nunique() == len(non_null) or "id" in col_lower or "code" in col_lower:
+                        is_id_like = True
+                
+                if is_id_like:
+                    column_types[col] = "ID"
+                else:
+                    column_types[col] = "Numeric"
             continue
             
         # Object/String column

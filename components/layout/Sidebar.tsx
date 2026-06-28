@@ -12,24 +12,11 @@ import {
   Users
 } from 'lucide-react';
 import { useAppStore } from '../../app/store';
-import AdminModal from './AdminModal';
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { sessionId, datasetType } = useAppStore();
-  const [clicks, setClicks] = useState(0);
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
 
-  const handleLogoClick = () => {
-    setClicks(prev => {
-      const next = prev + 1;
-      if (next >= 5) {
-        setIsAdminOpen(true);
-        return 0;
-      }
-      return next;
-    });
-  };
 
   const navItems = [
     { name: 'Upload', path: '/', icon: Upload, disabled: false },
@@ -43,7 +30,6 @@ export default function Sidebar() {
     <aside className="w-64 bg-[#0F172A] text-[#F1F5F9] flex flex-col h-screen sticky top-0 border-r border-[#1E293B]">
       {/* Title / Logo */}
       <div 
-        onClick={handleLogoClick}
         className="p-6 border-b border-[#1E293B] flex items-center gap-3 cursor-pointer select-none hover:bg-slate-900/30 transition-all"
       >
         <Database className="w-6 h-6 text-[#2563EB]" />
@@ -102,7 +88,6 @@ export default function Sidebar() {
         </div>
       )}
       
-      <AdminModal isOpen={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
     </aside>
   );
 }

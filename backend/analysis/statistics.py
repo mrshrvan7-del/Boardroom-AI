@@ -62,24 +62,29 @@ def compute_percentiles(series: pd.Series) -> Dict[str, float]:
 def compute_descriptive_stats(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
     stats_dict = {}
     
+    def clean_val(v):
+        if pd.isnull(v) or np.isinf(v):
+            return 0.0
+        return float(v)
+    
     for col in df.columns:
         if pd.api.types.is_numeric_dtype(df[col]):
             series_clean = df[col].dropna()
             if series_clean.empty:
                 continue
                 
-            mean_val = float(series_clean.mean())
-            median_val = float(series_clean.median())
+            mean_val = clean_val(series_clean.mean())
+            median_val = clean_val(series_clean.median())
             
             # Mode handling
             mode_series = series_clean.mode()
-            mode_val = float(mode_series[0]) if not mode_series.empty else mean_val
+            mode_val = clean_val(mode_series[0]) if not mode_series.empty else mean_val
             
-            std_val = float(series_clean.std()) if len(series_clean) > 1 else 0.0
-            var_val = float(series_clean.var()) if len(series_clean) > 1 else 0.0
+            std_val = clean_val(series_clean.std()) if len(series_clean) > 1 else 0.0
+            var_val = clean_val(series_clean.var()) if len(series_clean) > 1 else 0.0
             
-            skew_val = float(series_clean.skew()) if len(series_clean) > 2 else 0.0
-            kurt_val = float(series_clean.kurtosis()) if len(series_clean) > 3 else 0.0
+            skew_val = clean_val(series_clean.skew()) if len(series_clean) > 2 else 0.0
+            kurt_val = clean_val(series_clean.kurtosis()) if len(series_clean) > 3 else 0.0
             
             stats_dict[col] = {
                 "mean": mean_val,
@@ -89,9 +94,9 @@ def compute_descriptive_stats(df: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
                 "variance": var_val,
                 "skewness": skew_val,
                 "kurtosis": kurt_val,
-                "min": float(series_clean.min()),
-                "max": float(series_clean.max()),
-                "sum": float(series_clean.sum()),
+                "min": clean_val(series_clean.min()),
+                "max": clean_val(series_clean.max()),
+                "sum": clean_val(series_clean.sum()),
                 "distribution": detect_distribution(df[col]),
                 "percentiles": compute_percentiles(df[col])
             }
