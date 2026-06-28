@@ -3,7 +3,8 @@ import pandas as pd
 import numpy as np
 import re
 from typing import Dict, Any, List, Tuple
-
+import os
+from openai import OpenAI
 def parse_filter_request(message: str, df: pd.DataFrame, profile: Dict[str, Any]) -> Tuple[pd.DataFrame, str]:
     # Look for categorical column values in the message
     df_filtered = df.copy()
@@ -252,42 +253,69 @@ def handle_chat_query(message: str, conversation_history: List[Dict[str, str]], 
             ]
         }
         
-    # E. General Questions or Fallback
-    columns_list = ", ".join([f"`{c}`" for c in df.columns[:10]])
-    if len(df.columns) > 10:
-        columns_list += f" (+{len(df.columns)-10} more)"
-        
-    fallback_text = (
-        f"I received your question: \"{message}\".\n\n"
-        f"I can help you filter, sum, average, or plot any metrics in this **{dataset_type}** dataset.\n"
-        f"The dataset contains **{len(df):,}** rows and **{len(df.columns)}** columns. "
-        f"Here are some of the fields: {columns_list}.\n\n"
-        f"Try asking questions like:\n"
-    )
-    
-    if dataset_type == "HR":
-        fallback_text += (
-            "- *What is the average salary by department?*\n"
-            "- *Show me only female employees.*\n"
-            "- *Show me the trend of performance over time.*"
-        )
-    elif dataset_type == "Sales":
-        fallback_text += (
-            "- *What is the total revenue by product?*\n"
-            "- *Show me transactions over $1000.*\n"
-            "- *Show me the trend of sales over time.*"
-        )
-    else:
-        fallback_text += (
-            "- *What is the average values grouped by category?*\n"
-            "- *Show me a trend line chart of my numerical columns.*"
+    # E. General Questions or Fallback via LLM
+    try:
+        hf_token = os.environ.get("HF_TOKEN")
+        if not hf_token:
+            raise Exception("HF_TOKEN not found")
+            
+        client = OpenAI(
+            base_url="https://router.huggingface.co/v1",
+            api_key=hf_token,
         )
         
-    return {
-        "intent": "general_question",
-        "answer_text": fallback_text,
-        "follow_up_suggestions": [
-            "What is the overall data quality score?",
-            "Show me top performer groups"
-        ]
-    }
+        # Prepare context
+        col_info = []
+        for col_prof in profile.get("column_profiles", []):
+            col_info.append(f"- {col_prof['name']} (Type: {col_prof['semantic_type']})")
+        
+        context_msg = (
+            f"You are a data analysis assistant for a dataset named '{dataset_type}'.\n"
+            f"The dataset has {len(df)} rows and {len(df.columns)} columns.\n"
+            f"Columns: \n" + "\n".join(col_info) + "\n\n"
+            f"Answer the user's question about the data in a clear, concise, and helpful way. If they ask a general question, provide insights based on the columns."
+        )
+        
+        messages = [{"role": "system", "content": context_msg}]
+        
+        for msg in conversation_history[-5:]:
+            role = "user" if msg["sender"] == "user" else "assistant"
+            messages.append({"role": role, "content": msg["text"]})
+            
+        messages.append({"role": "user", "content": message})
+        
+        completion = client.chat.completions.create(
+            model="moonshotai/Kimi-K2-Instruct-0905",
+            messages=messages,
+        )
+        
+        return {
+            "intent": "general_question",
+            "answer_text": completion.choices[0].message.content,
+            "follow_up_suggestions": [
+                "What are the key statistics of this dataset?",
+                "Are there any anomalies?"
+            ]
+        }
+    except Exception as e:
+        # Fallback if LLM fails or is not configured
+        columns_list = ", ".join([f"`{c}`" for c in df.columns[:10]])
+        if len(df.columns) > 10:
+            columns_list += f" (+{len(df.columns)-10} more)"
+            
+        fallback_text = (
+            f"I received your question: \"{message}\".\n\n"
+            f"I can help you filter, sum, average, or plot any metrics in this **{dataset_type}** dataset.\n"
+            f"*(Note: To enable advanced AI responses, please add HF_TOKEN to your backend Secrets)*\n\n"
+            f"Here are some of the fields: {columns_list}.\n"
+        )
+            
+        return {
+            "intent": "general_question",
+            "answer_text": fallback_text,
+            "follow_up_suggestions": [
+                "What is the overall data quality score?",
+                "Show me top performer groups"
+            ]
+        }
+
